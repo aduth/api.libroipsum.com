@@ -1,0 +1,5 @@
+{
+    "maxParagraphs": 10,
+    "maxWords": 1000,
+    "port": 8080
+}
