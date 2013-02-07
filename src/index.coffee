@@ -17,7 +17,13 @@ async.series([
                 seeds.push path.relative(bookSource, file)
             , complete
     (complete) ->
-        bookCache = new LibroCache { rootDir: bookSource, seeds: seeds }, (err) -> complete err
+        bookCache = new LibroCache {
+            rootDir: bookSource
+            seeds: seeds
+            keyLength: settings.keyLength
+            cachePhraseWords: settings.cachePhraseWords
+            cacheAmount: settings.cacheAmount
+        }, (err) -> complete err
 ], ->
     console.log 'Ready for connections!'
 

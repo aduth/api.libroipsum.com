@@ -28,7 +28,10 @@
     }, function(complete) {
       return bookCache = new LibroCache({
         rootDir: bookSource,
-        seeds: seeds
+        seeds: seeds,
+        keyLength: settings.keyLength,
+        cachePhraseWords: settings.cachePhraseWords,
+        cacheAmount: settings.cacheAmount
       }, function(err) {
         return complete(err);
       });

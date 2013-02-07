@@ -1,5 +1,8 @@
 {
     "maxParagraphs": 10,
     "maxWords": 1000,
+    "keyLength": 6,
+    "cachePhraseWords": 100,
+    "cacheAmount": 5,
     "port": 8080
 }
