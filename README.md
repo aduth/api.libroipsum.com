@@ -4,7 +4,7 @@ Source for LibroIpsum public API. Supports `.txt`, `.json`, and `.xml` content-t
 
 [Read more about LibroIpsum](http://github.com/aduth/LibroIpsum)
 
-[Example API Request](http://api.libroipsum.com/books/cicero.json?words=80&paragraphs=2)
+Example API requests: [Cicero](http://api.libroipsum.com/books/cicero.json?words=80&paragraphs=2), [Plato's Republic](http://api.libroipsum.com/books/republic.json)
 
 ~~[LibroIpsum.com](http://www.libroipsum.com)~~ (Not yet available)
 
