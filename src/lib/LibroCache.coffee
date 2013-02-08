@@ -57,13 +57,14 @@ module.exports = class LibroCache
                 else
                     # Else, generate fresh
                     phrase += @getFresh fileName
+                phrase += ' '
 
             # Reduce phrase to numberOfWords words
             rCleanEnd = new RegExp("[\\\\#{LibroIpsum.clauseSeparators.join('\\\\')}\\s]*$")
-            phraseList.push phrase.replace(rCleanEnd, '')
-                .split(' ')
+            phraseList.push phrase.split(' ')
                 .slice(0, numberOfWords)
-                .join(' ') + '.'
+                .join(' ')
+                .replace(rCleanEnd, '') + '.'
 
         complete null, phraseList.join '\n\n'
 
