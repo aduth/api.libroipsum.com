@@ -63,6 +63,12 @@
               text: genText
             });
             break;
+          case 'jsonp':
+            contentType = 'application/javascript';
+            content = "" + req.query.callback + "(" + (JSON.stringify({
+              text: genText
+            })) + ")";
+            break;
           case 'xml':
             contentType = 'application/xml';
             content = "<text>" + genText + "</text>";

@@ -1,6 +1,6 @@
 # api.libroipsum.com
 
-Source for LibroIpsum public API. Supports `.txt`, `.json`, and `.xml` content-type rendering.
+Source for LibroIpsum public API. Supports `.txt`, `.json`, `.jsonp`, and `.xml` content-type rendering.
 
 [Read more about LibroIpsum](http://github.com/aduth/LibroIpsum)
 

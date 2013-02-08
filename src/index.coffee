@@ -44,7 +44,10 @@ async.series([
             switch contentType
                 when 'json'
                     contentType = 'application/json'
-                    content = JSON.stringify({ text: genText })
+                    content = JSON.stringify text: genText
+                when 'jsonp'
+                    contentType = 'application/javascript'
+                    content = "#{req.query.callback}(#{JSON.stringify text:genText})"
                 when 'xml'
                     contentType = 'application/xml'
                     content = "<text>#{genText}</text>"
