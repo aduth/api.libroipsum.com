@@ -51,7 +51,6 @@
       contentType = req.params.contenttype;
       words = Math.min(settings.maxWords, req.query.words || LibroCache.defaults.cachePhraseWords);
       paragraphs = Math.min(settings.maxParagraphs, req.query.paragraphs || 1);
-      console.log('req');
       bookCache.get("" + category + "/" + text + ".txt", words, paragraphs, function(err, genText) {
         var content;
         if (err) {

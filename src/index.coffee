@@ -37,8 +37,6 @@ async.series([
         words = Math.min settings.maxWords, req.query.words or LibroCache.defaults.cachePhraseWords
         paragraphs = Math.min settings.maxParagraphs, req.query.paragraphs or 1
 
-        console.log 'req'
-
         # Generate text
         bookCache.get "#{category}/#{text}.txt", words, paragraphs, (err, genText) ->
             genText = err.toString() if err
