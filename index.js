@@ -1,5 +1,5 @@
 (function() {
-  var LibroCache, app, async, bookCache, bookSource, dive, path, seeds, settings;
+  var LibroCache, analytics, app, async, bookCache, bookSource, dive, path, seeds, settings;
 
   app = require('express')();
 
@@ -12,6 +12,12 @@
   dive = require('dive');
 
   settings = require('./settings');
+
+  analytics = require('analytics-node');
+
+  analytics.init({
+    secret: require('./settings-secret').analyticsSecret
+  });
 
   seeds = [];
 
@@ -39,16 +45,19 @@
   ], function() {
     console.log('Ready for connections!');
     app.get('/:category/:text.:contenttype', function(req, res) {
-      var paragraphs, text, words;
+      var category, contentType, paragraphs, text, words;
+      category = req.params.category;
       text = req.params.text.replace(/[^\w]/g, '');
+      contentType = req.params.contenttype;
       words = Math.min(settings.maxWords, req.query.words || LibroCache.defaults.cachePhraseWords);
       paragraphs = Math.min(settings.maxParagraphs, req.query.paragraphs || 1);
-      return bookCache.get("" + req.params.category + "/" + text + ".txt", words, paragraphs, function(err, genText) {
-        var content, contentType;
+      console.log('req');
+      bookCache.get("" + category + "/" + text + ".txt", words, paragraphs, function(err, genText) {
+        var content;
         if (err) {
           genText = err.toString();
         }
-        switch (req.params.contenttype) {
+        switch (contentType) {
           case 'json':
             contentType = 'application/json';
             content = JSON.stringify({
@@ -65,6 +74,21 @@
         }
         res.header('Content-Type', contentType);
         return res.send(content);
+      });
+      return analytics.track({
+        userId: req.connection.remoteAddress,
+        event: 'Generated text',
+        properties: {
+          category: category,
+          text: text,
+          words: words,
+          paragraphs: paragraphs,
+          contentType: contentType
+        },
+        context: {
+          userAgent: req.headers['user-agent'],
+          ip: req.connection.remoteAddress
+        }
       });
     });
     if (!module.parent) {
