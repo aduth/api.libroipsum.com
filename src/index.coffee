@@ -73,6 +73,7 @@ async.series([
                 ip: req.connection.remoteAddress
 
     unless module.parent
-        app.listen settings.port
-        console.log "Listening on port #{settings.port}"
+        listenPort = process.env.PORT or settings.port
+        app.listen listenPort
+        console.log "Listening on port #{listenPort}"
 )

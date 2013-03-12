@@ -43,6 +43,7 @@
       });
     }
   ], function() {
+    var listenPort;
     console.log('Ready for connections!');
     app.get('/:category/:text.:contenttype', function(req, res) {
       var category, contentType, paragraphs, text, words;
@@ -97,8 +98,9 @@
       });
     });
     if (!module.parent) {
-      app.listen(settings.port);
-      return console.log("Listening on port " + settings.port);
+      listenPort = process.env.PORT || settings.port;
+      app.listen(listenPort);
+      return console.log("Listening on port " + listenPort);
     }
   });
 
