@@ -45,6 +45,40 @@
   ], function() {
     var listenPort;
     console.log('Ready for connections!');
+    app.get('/sources.:contenttype', function(req, res) {
+      var content, contentType, source, sources, _i, _j, _len, _len1;
+      contentType = req.params.contenttype;
+      sources = Object.keys(bookCache.ipsums);
+      switch (contentType) {
+        case 'json':
+          contentType = 'application/json';
+          content = JSON.stringify(sources);
+          break;
+        case 'jsonp':
+          contentType = 'application/javascript';
+          content = "" + req.query.callback + "(" + (JSON.stringify(sources)) + ")";
+          break;
+        case 'xml':
+          contentType = 'application/xml';
+          content = '<sources>';
+          for (_i = 0, _len = sources.length; _i < _len; _i++) {
+            source = sources[_i];
+            content += "<source>" + source + "</source>";
+          }
+          content += '</sources>';
+          break;
+        default:
+          contentType = 'text/plain';
+          content = '';
+          for (_j = 0, _len1 = sources.length; _j < _len1; _j++) {
+            source = sources[_j];
+            content += "" + source + ",";
+          }
+          content = content.replace(/,$/, '');
+      }
+      res.header('Content-Type', contentType);
+      return res.send(content);
+    });
     app.get('/:category/:text.:contenttype', function(req, res) {
       var category, contentType, paragraphs, text, words;
       category = req.params.category;

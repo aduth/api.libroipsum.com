@@ -30,6 +30,31 @@ async.series([
 ], ->
     console.log 'Ready for connections!'
 
+    app.get '/sources.:contenttype', (req, res) ->
+        contentType = req.params.contenttype
+        sources = Object.keys(bookCache.ipsums)
+
+        switch contentType
+            when 'json'
+                contentType = 'application/json'
+                content = JSON.stringify sources
+            when 'jsonp'
+                contentType = 'application/javascript'
+                content = "#{req.query.callback}(#{JSON.stringify sources})"
+            when 'xml'
+                contentType = 'application/xml'
+                content = '<sources>'
+                content += "<source>#{source}</source>" for source in sources
+                content += '</sources>'
+            else
+                contentType = 'text/plain'
+                content = ''
+                content += "#{source}," for source in sources
+                content = content.replace /,$/, ''
+
+        res.header 'Content-Type', contentType
+        res.send content
+
     app.get '/:category/:text.:contenttype', (req, res) ->
         category = req.params.category
         text = req.params.text.replace /[^\w]/g, ''
