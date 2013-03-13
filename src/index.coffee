@@ -1,38 +1,29 @@
-app        = require('express')()
-LibroCache = require './lib/LibroCache'
-path       = require 'path'
-async      = require 'async'
-dive       = require 'dive'
-settings   = require './settings'
-analytics  = require 'analytics-node'
+app          = require('express')()
+LibroCache   = require './lib/LibroCache'
+SourceHelper = require './lib/SourceHelper'
+settings     = require './settings'
+analytics    = require 'analytics-node'
 
 analytics.init secret: require('./settings-secret').analyticsSecret
 
-seeds = []
 bookSource = './sources/'
-bookCache = null
+sourceHelper = new SourceHelper bookSource
 
-async.series([
-    (complete) ->
-        console.log 'Seeding sources...'
-        dive bookSource,
-            (err, file) ->
-                seeds.push path.relative(bookSource, file)
-            , complete
-    (complete) ->
-        bookCache = new LibroCache {
-            rootDir: bookSource
-            seeds: seeds
-            keyLength: settings.keyLength
-            cachePhraseWords: settings.cachePhraseWords
-            cacheAmount: settings.cacheAmount
-        }, (err) -> complete err
-], ->
+console.log 'Seeding sources...'
+sourceHelper.getSources (err, sources) ->
+    bookCache = new LibroCache {
+        rootDir: bookSource
+        seeds: Object.keys(sources)
+        keyLength: settings.keyLength
+        cachePhraseWords: settings.cachePhraseWords
+        cacheAmount: settings.cacheAmount
+    }, (err) -> prepareRoutes(sources, bookCache)
+
+prepareRoutes = (sources, bookCache) ->
     console.log 'Ready for connections!'
 
     app.get '/sources.:contenttype', (req, res) ->
         contentType = req.params.contenttype
-        sources = Object.keys(bookCache.ipsums)
 
         switch contentType
             when 'json'
@@ -44,12 +35,13 @@ async.series([
             when 'xml'
                 contentType = 'application/xml'
                 content = '<sources>'
-                content += "<source>#{source}</source>" for source in sources
+                for path, src of sources
+                    content += "<source path=\"#{path}\" author=\"#{src.author}\" category=\"#{src.category}\">#{src.name}</source>"
                 content += '</sources>'
             else
                 contentType = 'text/plain'
                 content = ''
-                content += "#{source}," for source in sources
+                content += "#{path}," for path in Object.keys(sources)
                 content = content.replace /,$/, ''
 
         res.header 'Content-Type', contentType
@@ -101,4 +93,3 @@ async.series([
         listenPort = process.env.PORT or settings.port
         app.listen listenPort
         console.log "Listening on port #{listenPort}"
-)

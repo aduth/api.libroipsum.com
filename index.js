@@ -1,15 +1,11 @@
 (function() {
-  var LibroCache, analytics, app, async, bookCache, bookSource, dive, path, seeds, settings;
+  var LibroCache, SourceHelper, analytics, app, bookSource, prepareRoutes, settings, sourceHelper;
 
   app = require('express')();
 
   LibroCache = require('./lib/LibroCache');
 
-  path = require('path');
-
-  async = require('async');
-
-  dive = require('dive');
+  SourceHelper = require('./lib/SourceHelper');
 
   settings = require('./settings');
 
@@ -19,36 +15,31 @@
     secret: require('./settings-secret').analyticsSecret
   });
 
-  seeds = [];
-
   bookSource = './sources/';
 
-  bookCache = null;
+  sourceHelper = new SourceHelper(bookSource);
 
-  async.series([
-    function(complete) {
-      console.log('Seeding sources...');
-      return dive(bookSource, function(err, file) {
-        return seeds.push(path.relative(bookSource, file));
-      }, complete);
-    }, function(complete) {
-      return bookCache = new LibroCache({
-        rootDir: bookSource,
-        seeds: seeds,
-        keyLength: settings.keyLength,
-        cachePhraseWords: settings.cachePhraseWords,
-        cacheAmount: settings.cacheAmount
-      }, function(err) {
-        return complete(err);
-      });
-    }
-  ], function() {
+  console.log('Seeding sources...');
+
+  sourceHelper.getSources(function(err, sources) {
+    var bookCache;
+    return bookCache = new LibroCache({
+      rootDir: bookSource,
+      seeds: Object.keys(sources),
+      keyLength: settings.keyLength,
+      cachePhraseWords: settings.cachePhraseWords,
+      cacheAmount: settings.cacheAmount
+    }, function(err) {
+      return prepareRoutes(sources, bookCache);
+    });
+  });
+
+  prepareRoutes = function(sources, bookCache) {
     var listenPort;
     console.log('Ready for connections!');
     app.get('/sources.:contenttype', function(req, res) {
-      var content, contentType, source, sources, _i, _j, _len, _len1;
+      var content, contentType, path, src, _i, _len, _ref;
       contentType = req.params.contenttype;
-      sources = Object.keys(bookCache.ipsums);
       switch (contentType) {
         case 'json':
           contentType = 'application/json';
@@ -61,18 +52,19 @@
         case 'xml':
           contentType = 'application/xml';
           content = '<sources>';
-          for (_i = 0, _len = sources.length; _i < _len; _i++) {
-            source = sources[_i];
-            content += "<source>" + source + "</source>";
+          for (path in sources) {
+            src = sources[path];
+            content += "<source path=\"" + path + "\" author=\"" + src.author + "\" category=\"" + src.category + "\">" + src.name + "</source>";
           }
           content += '</sources>';
           break;
         default:
           contentType = 'text/plain';
           content = '';
-          for (_j = 0, _len1 = sources.length; _j < _len1; _j++) {
-            source = sources[_j];
-            content += "" + source + ",";
+          _ref = Object.keys(sources);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            path = _ref[_i];
+            content += "" + path + ",";
           }
           content = content.replace(/,$/, '');
       }
@@ -136,6 +128,6 @@
       app.listen(listenPort);
       return console.log("Listening on port " + listenPort);
     }
-  });
+  };
 
 }).call(this);
