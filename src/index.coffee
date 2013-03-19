@@ -22,6 +22,9 @@ sourceHelper.getSources (err, sources) ->
 prepareRoutes = (sources, bookCache) ->
     console.log 'Ready for connections!'
 
+    app.get '/', (req, res) ->
+        res.redirect('/sources.json')
+
     app.get '/sources.:contenttype', (req, res) ->
         contentType = req.params.contenttype
 

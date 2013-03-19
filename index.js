@@ -37,6 +37,9 @@
   prepareRoutes = function(sources, bookCache) {
     var listenPort;
     console.log('Ready for connections!');
+    app.get('/', function(req, res) {
+      return res.redirect('/sources.json');
+    });
     app.get('/sources.:contenttype', function(req, res) {
       var content, contentType, path, src, _i, _len, _ref;
       contentType = req.params.contenttype;
