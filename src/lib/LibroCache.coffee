@@ -10,7 +10,7 @@ module.exports = class LibroCache
         seeds: []
         rootDir: './'
 
-    constructor: (options = {}, complete) ->
+    constructor: (options = {}, complete = ->) ->
         @ipsums = {}
         @cached = {}
 

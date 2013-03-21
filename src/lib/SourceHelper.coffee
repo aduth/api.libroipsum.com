@@ -5,7 +5,7 @@ fs   = require 'fs'
 module.exports = class SourceHelper
     constructor: (@basePath) ->
 
-    getSources: (complete) ->
+    getSources: (complete = ->) ->
         complete null, @sources if @sources?
 
         @sources = { }
