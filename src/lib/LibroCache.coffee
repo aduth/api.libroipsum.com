@@ -21,8 +21,8 @@ module.exports = class LibroCache
         # Begin seed
         if @options.seeds.length
             async.series([
-                (complete) => async.forEach @options.seeds, ((seed, next) => @addSource seed, next), complete
-                (complete) => async.forEach @options.seeds, ((seed, next) => @cache seed, next), complete
+                (complete) => async.forEach @options.seeds, ((seed, next) => @addSource "#{seed}.txt", next), complete
+                (complete) => async.forEach @options.seeds, ((seed, next) => @cache "#{seed}.txt", next), complete
             ], (err) => complete err, @)
 
     cache: (fileName, next = ->) ->

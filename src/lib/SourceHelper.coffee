@@ -20,7 +20,7 @@ module.exports = class SourceHelper
                         fileBase = path.basename fileRel, fileExt
                         fileContents = fs.readFileSync file, 'utf-8'
 
-                        @sources["#{fileDir}/#{fileBase}.txt"] = JSON.parse(fileContents)
+                        @sources["#{fileDir}/#{fileBase}"] = JSON.parse(fileContents)
                 , => complete null, @sources
         catch err
             complete err, @sources
