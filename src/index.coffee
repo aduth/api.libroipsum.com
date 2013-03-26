@@ -17,7 +17,9 @@ sourceHelper.getSources (err, sources) ->
         keyLength: settings.keyLength
         cachePhraseWords: settings.cachePhraseWords
         cacheAmount: settings.cacheAmount
-    }, (err) -> prepareRoutes(sources, bookCache)
+    }
+
+    prepareRoutes(sources, bookCache)
 
 prepareRoutes = (sources, bookCache) ->
     console.log 'Ready for connections!'

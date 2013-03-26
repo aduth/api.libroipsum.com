@@ -23,15 +23,14 @@
 
   sourceHelper.getSources(function(err, sources) {
     var bookCache;
-    return bookCache = new LibroCache({
+    bookCache = new LibroCache({
       rootDir: bookSource,
       seeds: Object.keys(sources),
       keyLength: settings.keyLength,
       cachePhraseWords: settings.cachePhraseWords,
       cacheAmount: settings.cacheAmount
-    }, function(err) {
-      return prepareRoutes(sources, bookCache);
     });
+    return prepareRoutes(sources, bookCache);
   });
 
   prepareRoutes = function(sources, bookCache) {
